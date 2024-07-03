@@ -4,7 +4,6 @@ import os
 from skimage import io
 np.set_printoptions(suppress=True)
 import math
-# from matplotlib import pyplot as plt
 import matplotlib.pyplot as plt # plt 用于显示图片
 import time
 import pandas as pd
@@ -134,7 +133,7 @@ def get_gradient_matrix(piex_matrix,mem_matrix,threshold):         ##### 图像�
         else:
             max_point_value=min_val
         if piex<=threshold and abs(max_point_value)>= gradent_threshold:
-        # if abs(max_point_value)>= condition1_big:#####如果大于这个阈值      #####最大值大于条件1，则这个点的梯度为
+
             gradient_matrix[i,0]=max_point_value
     return gradient_matrix
 
@@ -160,7 +159,7 @@ def gradient_maxtrix(gradient_matrix_h,gradient_matrix_v):
 
 
 
-    # gradient_matrix = np.uint8(gradient_matrix)
+
     return gradient_matrix,direction_matrix
 
 
@@ -176,7 +175,6 @@ if __name__=="__main__":
 
         img_result = np.zeros_like(img)
         m = img.shape[0];n = img.shape[1]
-        # img=cv2.medianBlur(img,3)
         img = cv2.GaussianBlur(img, (5, 5), 1)  # 高斯滤波
         new_matrix_h = np.zeros((m, n), dtype=object)
         new_matrix_v = np.zeros((m, n), dtype=object)
@@ -221,5 +219,3 @@ if __name__=="__main__":
         endtime=time.time()
         print(endtime-starttime1)
     print('2112个图片，共耗时：',endtime-starttime)
-    # endtime=time.time()
-    # print(endtime-starttime)

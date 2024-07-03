@@ -50,11 +50,7 @@ for filename in os.listdir(path_read):
             continue
         centroid_x = centroids[i][0]
         centroid_y = centroids[i][1]
-        # 平均准确率为： 0.9910537582455258      323 265            312会↑  260会↑
-        # 平均精度为： 0.9691706395388481
-        # 平均召回率为： 0.9525615317128047
-        # 平均MIoU为： 0.9591726615013249
-        # 平均F1Score为： 0.9595072660352029
+
         if cccccc[1] < 4000:
             if 270 <= centroid_x <= 460 and ((80 <= centroid_y <= 256)) and stats[i][-1] < 1500:  ####去左上方的和右下方的
                 continue
@@ -62,7 +58,7 @@ for filename in os.listdir(path_read):
                 continue
         else:  ###此时肺部图形较为完善，可以采用较大的
             if 180 <= centroid_x <= 350 and 100 <= centroid_y <= 400 and stats[i][-1] < 400:  ####去除中心血管等
-            # if 180 <= centroid_x <= 350 and 100 <= centroid_y <= 400 and stats[i][-1] < 400:  ####去除中心血管等
+
                 continue
             if 200 <= centroid_x <= 330 and 190 <= centroid_y <= 305 and stats[i][-1] < 1100:  ####去除中心血管等
                 continue  #######   中心的血管分为两部分，图像中心靠两边的较小，中心的较大
@@ -111,5 +107,3 @@ for filename in os.listdir(path_read):
 
 
 
-# cv2.waitKey()
-# cv2.destroyAllWindows()
