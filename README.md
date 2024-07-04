@@ -33,15 +33,18 @@ python code/ROI_gradient_matrix.py
 
 # Repair Contours Using Convex Hull
 python code/repair_contours_convex_hull.py
+```
 
 ## Features
-- Process gradient images
-- Compute the region of interest (ROI) gradient matrix
-- Repair contours using convex hulls
+```
+Process gradient images
+Compute the region of interest (ROI) gradient matrix
+Repair contours using convex hulls
+```
 
 ## Contributing
 Contributions are welcome! Please follow these steps to contribute:
-
+```
 # Fork this repository
 
 # Create your feature branch
@@ -54,4 +57,4 @@ git commit -am 'Add some feature'
 git push origin feature/your-feature
 
 # Create a new Pull Request
-
+```
