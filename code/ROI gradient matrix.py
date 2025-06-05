@@ -166,8 +166,8 @@ def gradient_maxtrix(gradient_matrix_h,gradient_matrix_v):
 
 
 if __name__=="__main__":
-    path_read = 'E:/pythonProject/kaggle/input/initial_image'
-    path_strong='E:/pythonProject/kaggle/gradient_matrix/'
+    path_read = 'C:/Users/alex1/iCloudDrive/Mestrado/LungCTseg/data/input' #Folder Containing .nii.gz exams
+    path_strong='C:/Users/alex1/iCloudDrive/Mestrado/LungCTseg/data/output_ROI_gradient_matrix' #PNG images
     for filename in os.listdir(path_read):
         print('正在进行的图片名称：', filename)
         starttime1 = time.time()
