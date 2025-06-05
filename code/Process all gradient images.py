@@ -20,8 +20,8 @@ def FillHole(mask):
     out = sum(contour_list)
     return out
 
-path_read = 'E:/pythonProject/kaggle/gradient_matrix'
-path_gray = 'E:/pythonProject/kaggle/prediction/'
+path_read = 'C:/Users/alex1/iCloudDrive/Mestrado/LungCTseg/data/output_ROI_gradient_matrix'
+path_gray = 'C:/Users/alex1/iCloudDrive/Mestrado/LungCTseg/data/processed_gradient_images'
 for filename in os.listdir(path_read):
     print('正在进行的图片名称：', filename)
     img = io.imread(path_read + '/' + filename, 0)
