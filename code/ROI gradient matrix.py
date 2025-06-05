@@ -80,7 +80,7 @@ def memSim(img, f, f1):     #####mem函数第55---->66位灰度发生变化，�
 def get_mask(binary,initial_threshold):
     ######### 自适应阈值（胸腔） #########
     binary = find_max_region(binary)  ###二值图像的最大连通区域，即胸腔
-    c = np.multiply(np.mat(binary), np.mat(img))
+    c = np.multiply(np.mat(binary), np.mat(img_slice))
     d = np.sum(c)
     number = len(c.nonzero()[0])
     condition = d / number
