@@ -3,7 +3,7 @@ import cv2
 import os
 from skimage import io
 np.set_printoptions(suppress=True)
-import tensorflow
+#import tensorflow
 
 
 def FillHole(mask):  #########白色为准
@@ -90,13 +90,13 @@ def remove_longest_segments(contours):
 
 
 
-path_read = 'E:/pythonProject/kaggle/canny/prediction_bi/'
-path_gray = 'E:/pythonProject/kaggle/canny/prediction_convex/'
+path_read = 'C:/Users/alex1/iCloudDrive/Mestrado/LungCTseg/data/processed_gradient_images'
+path_gray = 'C:/Users/alex1/iCloudDrive/Mestrado/LungCTseg/data/contour_repaired_images'
 
 
 for filename in os.listdir(path_read):
     print('正在进行的图片名称：', filename)
-    img = io.imread(path_read + filename, 0)
+    img = io.imread(path_read + '/' + filename, 0)
 
     if np.max(img)==0:
         image_filtered=img
@@ -136,4 +136,4 @@ for filename in os.listdir(path_read):
 
 
 
-    cv2.imwrite(path_gray + filename,image_filtered)
+    cv2.imwrite(path_gray + '/' + filename,image_filtered)
