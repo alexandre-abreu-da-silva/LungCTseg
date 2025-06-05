@@ -102,7 +102,7 @@ for filename in os.listdir(path_read):
 
         image_filtered_result[labels == i] = 255
     image_filtered = FillHole(image_filtered)
-    cv2.imwrite(path_gray + filename, image_filtered_result)
+    cv2.imwrite(path_gray + '/' + filename, image_filtered_result)
 
 
 
