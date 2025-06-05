@@ -171,50 +171,56 @@ if __name__=="__main__":
     for filename in os.listdir(path_read):
         print('正在进行的图片名称：', filename)
         starttime1 = time.time()
+        io.use_plugin('simpleitk')
         img = io.imread(path_read + '/' + filename,0)
+        img = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX)
+        img = img.astype(np.uint8)
 
-        img_result = np.zeros_like(img)
-        m = img.shape[0];n = img.shape[1]
-        img = cv2.GaussianBlur(img, (5, 5), 1)  # 高斯滤波
-        new_matrix_h = np.zeros((m, n), dtype=object)
-        new_matrix_v = np.zeros((m, n), dtype=object)
-        scale = int((value_length - 1) / 2)
+        for i in range(0, img.shape[0], 10):
+            img_slice = img[i,:,:]
+        
+            img_result = np.zeros_like(img_slice)
+            m = img_slice.shape[0];n = img_slice.shape[1]
+            img_slice = cv2.GaussianBlur(img_slice, (5, 5), 1)  # 高斯滤波
+            new_matrix_h = np.zeros((m, n), dtype=object)
+            new_matrix_v = np.zeros((m, n), dtype=object)
+            scale = int((value_length - 1) / 2)
+            
+            initial_threshold, binary = cv2.threshold(img_slice, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)  #####获得二值图像和阈值
+            gradent_threshold = get_mask(binary,initial_threshold)        #####获得用于判断梯度阈值的参数
+            initial_threshold = initial_threshold
 
-        initial_threshold, binary = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)  #####获得二值图像和阈值
-        gradent_threshold = get_mask(binary,initial_threshold)        #####获得用于判断梯度阈值的参数
-        initial_threshold = initial_threshold
+            ####获得用于处理
+            dst = FillHole(binary)  ####空洞填充得到整个胸腔
+            kernel2 = np.ones((30, 30), np.uint8)
+            Max_connected_area_fill = cv2.erode(dst, kernel2)  ###缩小胸腔，去除胸腔外的部分
+            Max_connected_area_fill = Max_connected_area_fill / 255  ####处于255，用于和边缘相乘，去除内部边缘
 
-        ####获得用于处理
-        dst = FillHole(binary)  ####空洞填充得到整个胸腔
-        kernel2 = np.ones((30, 30), np.uint8)
-        Max_connected_area_fill = cv2.erode(dst, kernel2)  ###缩小胸腔，去除胸腔外的部分
-        Max_connected_area_fill = Max_connected_area_fill / 255  ####处于255，用于和边缘相乘，去除内部边缘
+            new_matrix_h, new_matrix_v = get_object_matrix(img_slice)
+            new_matrix_h_expend = trans_matrix(new_matrix_h)  #####横向取值
+            new_matrix_v_expend = trans_matrix(new_matrix_v)  #####纵向取值
+            pa_h = memSim(new_matrix_h_expend, f, f1)
+            pa_h = np.delete(pa_h, 0, axis=1)  ######删除第一个列多余的数据
+            pa_v = memSim(new_matrix_v_expend, f, f1)
+            pa_v = np.delete(pa_v, 0, axis=1)  #######第二个对应的是第二个和第一个进行差分，列数为5，分别对应五个差分
+            #####将原始矩阵先按行拼接，再调整成一列
+            # 将矩阵展平为一维形状,用以得到矩阵的长和宽的乘积
+            flat_array = img_slice.reshape(-1)
+            # 将一维数组变形为原始形状中的列向量
+            piex_matrix = flat_array.reshape(flat_array.shape[0], -1)
+            gradient_matrix_h = get_gradient_matrix(piex_matrix, pa_h, initial_threshold)
+            gradient_matrix_v = get_gradient_matrix(piex_matrix, pa_v, initial_threshold)
+            gradient_matrix_h = gradient_matrix_h.reshape(1, -1)
+            gradient_matrix_v = gradient_matrix_v.reshape(1, -1)
+            ####此矩阵为梯度矩阵
+            gradient_matrix_h = gradient_matrix_h.reshape(img_slice.shape[0], img_slice.shape[1])
+            gradient_matrix_v = gradient_matrix_v.reshape(img_slice.shape[0], img_slice.shape[1])
 
-        new_matrix_h, new_matrix_v = get_object_matrix(img)
-        new_matrix_h_expend = trans_matrix(new_matrix_h)  #####横向取值
-        new_matrix_v_expend = trans_matrix(new_matrix_v)  #####纵向取值
-        pa_h = memSim(new_matrix_h_expend, f, f1)
-        pa_h = np.delete(pa_h, 0, axis=1)  ######删除第一个列多余的数据
-        pa_v = memSim(new_matrix_v_expend, f, f1)
-        pa_v = np.delete(pa_v, 0, axis=1)  #######第二个对应的是第二个和第一个进行差分，列数为5，分别对应五个差分
-        #####将原始矩阵先按行拼接，再调整成一列
-        # 将矩阵展平为一维形状,用以得到矩阵的长和宽的乘积
-        flat_array = img.reshape(-1)
-        # 将一维数组变形为原始形状中的列向量
-        piex_matrix = flat_array.reshape(flat_array.shape[0], -1)
-        gradient_matrix_h = get_gradient_matrix(piex_matrix, pa_h, initial_threshold)
-        gradient_matrix_v = get_gradient_matrix(piex_matrix, pa_v, initial_threshold)
-        gradient_matrix_h = gradient_matrix_h.reshape(1, -1)
-        gradient_matrix_v = gradient_matrix_v.reshape(1, -1)
-        ####此矩阵为梯度矩阵
-        gradient_matrix_h = gradient_matrix_h.reshape(img.shape[0], img.shape[1])
-        gradient_matrix_v = gradient_matrix_v.reshape(img.shape[0], img.shape[1])
+            gradient_matrix, direction_matrix = gradient_maxtrix(gradient_matrix_h, gradient_matrix_v)
 
-        gradient_matrix, direction_matrix = gradient_maxtrix(gradient_matrix_h, gradient_matrix_v)
-
-        immmmmm = (abs(gradient_matrix) / np.max(abs(gradient_matrix)) * 255).astype(np.uint8)
-        image_result = immmmmm * Max_connected_area_fill  ####去除胸腔
-        cv2.imwrite(path_strong + filename, image_result)
+            immmmmm = (abs(gradient_matrix) / np.max(abs(gradient_matrix)) * 255).astype(np.uint8)
+            image_result = immmmmm * Max_connected_area_fill  ####去除胸腔
+            cv2.imwrite(path_strong + '/' + filename + str(i) + '.png', image_result)
 
         endtime=time.time()
         print(endtime-starttime1)
